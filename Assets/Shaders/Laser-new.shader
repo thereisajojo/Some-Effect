@@ -22,19 +22,10 @@ Shader "Custom/Bubble"
     }
     SubShader
     {
-        Tags
-        {
-            "RenderType" = "Transparent"
-        }
-        LOD 100
+        Tags { "RenderType" = "Transparent" "RenderPipeline" = "UniversalRenderPipeline" "Queue" = "Transparent"}
 
         Pass
         {
-            Tags
-            {
-                "LightMode" = "ForwardBase"
-            }
-
             ZWrite off
             Blend SrcAlpha OneMinusSrcAlpha
 
@@ -101,7 +92,7 @@ Shader "Custom/Bubble"
                 return o;
             }
 
-            fixed4 frag(v2f i) : SV_Target
+            half4 frag(v2f i) : SV_Target
             {
                 //TBN
                 half3x3 TBN = float3x3(i.tDirWS, i.bDirWS, i.nDirWS);
@@ -156,7 +147,7 @@ Shader "Custom/Bubble"
                 //透明度受反射图像明度 边缘厚度影响
                 float finalAlpha = _BubbleAlpha * (reflectLumin * 0.5 + 0.5) + fresnel * 0.2;
 
-                return float4(finalCol, finalAlpha);
+                return half4(finalCol, finalAlpha);
             }
             ENDCG
         }

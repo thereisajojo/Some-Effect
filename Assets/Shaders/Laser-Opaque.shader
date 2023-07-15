@@ -1,7 +1,8 @@
 // 镭射材质（薄膜干涉） 不透明
 // 由两层颜色构成：从背后折射过来的光，和正面反射的光
-// 折射光作为Diffusion Color
-// 反射光作为Specular Color，修改BRDF.hlsl中的InitializeBRDFData函数
+// 折射光作为 Diffusion Color
+// 反射光作为 Specular Color，修改 BRDF.hlsl 中的 InitializeBRDFData 函数
+// 由于使用的是金属度粗糙度工作流，surfaceData 中的 specular 参数没有用，我们可以拿它来传参数
 Shader "Custom/Laser-Opaque"
 {
     Properties
