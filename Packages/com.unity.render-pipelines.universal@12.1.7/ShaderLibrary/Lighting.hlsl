@@ -322,6 +322,68 @@ half4 UniversalFragmentPBR(InputData inputData, SurfaceData surfaceData)
     return CalculateFinalColor(lightingData, surfaceData.alpha);
 }
 
+// Fabric Scatter
+inline half FabricScatterFresnelLerp(half nv, half scale)
+{
+    half t0 = Pow4 (1 - nv); 
+    half t1 = 0.4 * (1 - nv);
+    return (t1 - t0) * scale + t0;
+}
+// 原pbr直接加上Fabric Scatter
+half4 UniversalFragmentPBR(InputData inputData, SurfaceData surfaceData, half3 fabricColor, float fabricScale)
+{
+    #if defined(_SPECULARHIGHLIGHTS_OFF)
+    bool specularHighlightsOff = true;
+    #else
+    bool specularHighlightsOff = false;
+    #endif
+    BRDFData brdfData;
+
+    // NOTE: can modify "surfaceData"...
+    InitializeBRDFData(surfaceData, brdfData);
+
+    #if defined(DEBUG_DISPLAY)
+    half4 debugColor;
+
+    if (CanDebugOverrideOutputColor(inputData, surfaceData, brdfData, debugColor))
+    {
+        return debugColor;
+    }
+    #endif
+
+    // Clear-coat calculation...
+    BRDFData brdfDataClearCoat = CreateClearCoatBRDFData(surfaceData, brdfData);
+    half4 shadowMask = CalculateShadowMask(inputData);
+    AmbientOcclusionFactor aoFactor = CreateAmbientOcclusionFactor(inputData, surfaceData);
+    uint meshRenderingLayers = GetMeshRenderingLightLayer();
+    Light mainLight = GetMainLight(inputData, shadowMask, aoFactor);
+
+    // NOTE: We don't apply AO to the GI here because it's done in the lighting calculation below...
+    MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI);
+
+    LightingData lightingData = CreateLightingData(inputData, surfaceData);
+
+    lightingData.giColor = GlobalIllumination(brdfData, brdfDataClearCoat, surfaceData.clearCoatMask,
+                                              inputData.bakedGI, aoFactor.indirectAmbientOcclusion, inputData.positionWS,
+                                              inputData.normalWS, inputData.viewDirectionWS);
+
+    if (IsMatchingLightLayer(mainLight.layerMask, meshRenderingLayers))
+    {
+        lightingData.mainLightColor = LightingPhysicallyBased(brdfData, brdfDataClearCoat,
+                                                              mainLight,
+                                                              inputData.normalWS, inputData.viewDirectionWS,
+                                                              surfaceData.clearCoatMask, specularHighlightsOff);
+    }
+
+    float NoL = dot(inputData.normalWS, mainLight.direction);
+    float NoV = dot(inputData.normalWS, inputData.viewDirectionWS);
+    half3 fabricScatter = fabricColor * (NoL * 0.5 + 0.5) * FabricScatterFresnelLerp(NoV, fabricScale) * mainLight.distanceAttenuation;
+
+    half4 finalColor = CalculateFinalColor(lightingData, surfaceData.alpha);
+    finalColor.rgb += fabricScatter;
+    return finalColor;
+}
+
 // Deprecated: Use the version which takes "SurfaceData" instead of passing all of these arguments...
 half4 UniversalFragmentPBR(InputData inputData, half3 albedo, half metallic, half3 specular,
     half smoothness, half occlusion, half3 emission, half alpha)

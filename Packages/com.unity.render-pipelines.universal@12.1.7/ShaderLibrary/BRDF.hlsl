@@ -185,6 +185,34 @@ half3 EnvironmentBRDFClearCoat(BRDFData brdfData, half clearCoatMask, half3 indi
     return indirectSpecular * EnvironmentBRDFSpecular(brdfData, fresnelTerm) * clearCoatMask;
 }
 
+#ifdef _FABRIC
+// FabricD 织物光照,修改高光中的D法线分布项,也就是原函数中的d2
+inline float FabricD (float NdotH, float roughness)
+{
+    return 0.96 * pow(1 - NdotH, 2) + 0.057;
+}
+// V * F = 1.0 / ( LoH^2 * (roughness + 0.5) )
+// BRDFspec = (D * V * F) / 4.0 = D * (V * F) / 4.0 = D / ( LoH^2 * (roughness * 4.0 + 2.0) )
+half DirectBRDFSpecular(BRDFData brdfData, half3 normalWS, half3 lightDirectionWS, half3 viewDirectionWS)
+{
+    float3 lightDirectionWSFloat3 = float3(lightDirectionWS);
+    float3 halfDir = SafeNormalize(lightDirectionWSFloat3 + float3(viewDirectionWS));
+
+    float NoH = saturate(dot(float3(normalWS), halfDir));
+    half LoH = half(saturate(dot(lightDirectionWSFloat3, halfDir)));
+
+    float D = FabricD(NoH, brdfData.roughness);
+    half LoH2 = LoH * LoH;
+    half specularTerm = D / (max(half(0.1), LoH2) * brdfData.normalizationTerm);
+
+    #if defined (SHADER_API_MOBILE) || defined (SHADER_API_SWITCH)
+    specularTerm = specularTerm - HALF_MIN;
+    specularTerm = clamp(specularTerm, 0.0, 100.0); // Prevent FP16 overflow on mobiles
+    #endif
+
+    return specularTerm;
+}
+#else
 // Computes the scalar specular term for Minimalist CookTorrance BRDF
 // NOTE: needs to be multiplied with reflectance f0, i.e. specular color to complete
 half DirectBRDFSpecular(BRDFData brdfData, half3 normalWS, half3 lightDirectionWS, half3 viewDirectionWS)
@@ -221,6 +249,7 @@ half DirectBRDFSpecular(BRDFData brdfData, half3 normalWS, half3 lightDirectionW
 
 return specularTerm;
 }
+#endif
 
 // Based on Minimalist CookTorrance BRDF
 // Implementation is slightly different from original derivation: http://www.thetenthplanet.de/archives/255
