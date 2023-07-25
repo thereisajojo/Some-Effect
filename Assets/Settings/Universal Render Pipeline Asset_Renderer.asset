@@ -16,7 +16,8 @@ MonoBehaviour:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
   m_RendererFeatures:
   - {fileID: 5970719404987083221}
-  m_RendererFeatureMap: d569c923aa41dc52
+  - {fileID: 8616454711127161371}
+  m_RendererFeatureMap: d569c923aa41dc521bbaf967e8cb9377
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -75,4 +76,32 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 4294967295
     RenderQueueType: 1
-    TestRt: {fileID: 8400000, guid: 6dbff60dd485f4a4194a531524946761, type: 2}
+--- !u!114 &8616454711127161371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e22ab128924c4694895bf6c0de260947, type: 3}
+  m_Name: GlitchPostProcessFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  PostProcessShader: {fileID: 4800000, guid: c2f70ddb7e42f084f8b3a403a24504a4, type: 3}
+  RenderPassEvent: 500
+  Type: 2
+  MaterialProperties:
+    ImageBlockGlitch:
+      Speed: 0
+      BlockSize: {x: 0, y: 0}
+    ScanLineJitterGlitch:
+      ScanLineJitter: {x: 0.04, y: 0}
+    LineBlockGlitch:
+      TimeSpeed: 0.1
+      Frequency: 0.6
+      LinesWidth: 1
+      Amount: 0.8
+      Offset: 1
+      Alpha: 1
