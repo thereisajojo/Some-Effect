@@ -62,4 +62,15 @@ half4 ShadowPassFragment(Varyings input) : SV_TARGET
     return 0;
 }
 
+// VSM
+float4 VarianceShadowPassFrag(Varyings input) : SV_TARGET
+{
+    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).a, _BaseColor, _Cutoff);
+    float depth = input.positionCS.z / input.positionCS.w;
+    #if defined (UNITY_REVERSED_Z)
+        depth = 1 - depth;
+    #endif
+    return float4(depth, depth * depth, 0, 0);
+}
+
 #endif

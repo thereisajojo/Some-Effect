@@ -7,6 +7,7 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LightCookie/LightCookie.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Clustering.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShadowVariance.hlsl"
 
 ///////////////////////////////////////////////////////////////////////////////
 //                             Light Layers                                   /
@@ -142,7 +143,12 @@ Light GetMainLight(float4 shadowCoord)
 Light GetMainLight(float4 shadowCoord, float3 positionWS, half4 shadowMask)
 {
     Light light = GetMainLight();
-    light.shadowAttenuation = MainLightShadow(shadowCoord, positionWS, shadowMask, _MainLightOcclusionProbes);
+    #if defined(_VARIANCE_SHADOW)
+        light.shadowAttenuation = MainLightShadow(positionWS);
+    #else
+        light.shadowAttenuation = MainLightShadow(shadowCoord, positionWS, shadowMask, _MainLightOcclusionProbes);
+    #endif
+    
 
     #if defined(_LIGHT_COOKIES)
         real3 cookieColor = SampleMainLightCookie(positionWS);
