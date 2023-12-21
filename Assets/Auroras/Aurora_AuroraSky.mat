@@ -27,7 +27,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AuroraIntensity: 0.5
-    - _AuroraSpeed: 0.5
+    - _AuroraSpeed: 0.322
     - _CloudIntensity: 0.5
     - _CloudSpeed: 0.5
     - _Exponent1: 10
@@ -35,15 +35,15 @@ Material:
     - _Intensity: 1
     - _MountainFactor: 0.5
     - _MountainHeight: 0.5
-    - _StarIntensity: 0.5
-    - _StarSpeed: 0.5
-    - _SurAuroraColFactor: 0.5
+    - _StarIntensity: 0.538
+    - _StarSpeed: 0.211
+    - _SurAuroraColFactor: 0.74
     m_Colors:
-    - _AuroraColor: {r: 1, g: 1, b: 1, a: 0}
-    - _CloudColor: {r: 1, g: 1, b: 1, a: 0}
+    - _AuroraColor: {r: 1, g: 0.45032957, b: 0, a: 0}
+    - _CloudColor: {r: 0.02158241, g: 0.9150943, b: 0.853429, a: 0}
     - _Color1: {r: 0, g: 0, b: 0, a: 1}
     - _Color2: {r: 0.23529413, g: 0.29803923, b: 0.47450984, a: 1}
     - _Color3: {r: 0.028301895, g: 0.028301895, b: 0.028301895, a: 1}
     - _MountainColor: {r: 1, g: 1, b: 1, a: 0}
-    - _StarColor: {r: 1, g: 1, b: 1, a: 0}
+    - _StarColor: {r: 0.29156286, g: 0.38685408, b: 0.5283019, a: 1}
   m_BuildTextureStacks: []
