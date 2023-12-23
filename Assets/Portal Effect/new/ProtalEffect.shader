@@ -95,7 +95,7 @@
 
 
 			// final moving texture with the distortion
-			half4 final = SAMPLE_TEXTURE2D(_MovingTex, sampler_MovingTex, movingUV).r;
+			half final = SAMPLE_TEXTURE2D(_MovingTex, sampler_MovingTex, movingUV).r;
 
 			shapeTex *= _ShapeTexIntensity;
 			final *= shapeTex;
@@ -144,7 +144,7 @@
 		Pass
 		{
 			Name "ProtalEffect"
-			Tags{ "RenderType" = "Transparent" "LightMode" = "UniversalForward" "Queue" = "Transparent+1" }
+			Tags{ "RenderType" = "Transparent" "LightMode" = "UniversalForward" }
 
 			ZWrite Off
 			Ztest Off
